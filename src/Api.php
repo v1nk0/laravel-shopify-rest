@@ -13,7 +13,7 @@ class Api
 
     public string $version;
 
-    public array $allowedHttpMethods = ['GET', 'POST'];
+    public array $allowedHttpMethods = ['GET', 'POST', 'DELETE'];
 
     public function __construct(?string $domain, ?string $token){
         $this->domain = $domain ?? config('services.shopify.domain');
@@ -53,20 +53,29 @@ class Api
 
             $response = $httpClient->send($method, $this->_getPath($path));
 
-            $response->throw();
+            if(!$response->ok()) {
+                return new Response(false, [], $response->json('errors'));
+            }
 
-            return new Response($response->json());
+            $links = [];
+
+            if($response->header('Link')) {
+                $headerLinks = explode(',', $response->header('Link'));
+                foreach($headerLinks as $headerLink) {
+                    $headerLink = trim($headerLink);
+                    $headerLinkParts = explode(';', $headerLink);
+                    $url = trim(str_replace(['<', '>'], '', $headerLinkParts[0]));
+                    $rel = trim(str_replace(['rel=', '"'], '', $headerLinkParts[1]));
+
+                    $links[] = new Link($url, $rel);
+                }
+            }
+
+            return new Response(true, $response->json(), null, $links);
         }
         catch(Exception $e) {
-            // Do something?
-            throw new Exception($e->getMessage());
+            return new Response(false, [], $e->getMessage());
         }
-    }
-
-    public function setToken(string $token): Api
-    {
-        $this->token = $token;
-        return $this;
     }
 
     private function _getPath(string $path): string
