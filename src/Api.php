@@ -34,10 +34,12 @@ class Api
             ]);
 
             if($payload) {
-                $httpClient->withBody(json_encode($payload));
+                $httpClient->withBody(json_encode($payload), 'application/json');
             }
 
             $response = $httpClient->send($method, $this->_getPath($path));
+
+            $response->throw();
         }
         catch(Exception $e) {
             // Do something?
