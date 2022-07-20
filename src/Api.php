@@ -51,7 +51,7 @@ class Api
                 $httpClient->withBody(json_encode($payload), 'application/json');
             }
 
-            $response = $httpClient->send($method, 'https://'.$this->_getDomain().$this->_getPath($path));
+            $response = $httpClient->send($method, $this->_getPath($path));
 
             $response->throw();
 
@@ -76,7 +76,7 @@ class Api
             return $path;
         }
 
-        return $this->baseUrl.'/admin/api/'.$this->version.'/'.explode('/admin/', $path)[1];
+        return 'https://'.$this->_getDomain().'/admin/api/'.$this->version.'/'.explode('/admin/', $path)[1];
     }
 
     private function _getDomain(): string
