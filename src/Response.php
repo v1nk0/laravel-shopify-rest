@@ -37,6 +37,20 @@ class Response
         $this->error = $error;
     }
 
+    public function hasHeader(string $key): bool
+    {
+        return (isset($this->headers[$key][0]));
+    }
+
+    public function getHeader(string $key): int|string|null
+    {
+        if(!$this->hasHeader($key)) {
+            return null;
+        }
+
+        return $this->headers[$key][0];
+    }
+
     public function hasLinkWithRel(string $rel): bool
     {
         foreach($this->links as $link) {
@@ -57,5 +71,21 @@ class Response
         }
 
         return null;
+    }
+
+    public function rateLimitReached(): bool
+    {
+        return ($this->statusCode === 419);
+    }
+
+    public function retryAfter(): int
+    {
+        if(!$this->rateLimitReached()) {
+            return 0;
+        }
+
+        $retryAfter = $this->getHeader('Retry-After');
+
+        return ($retryAfter) ? (int)$retryAfter : (int)config('services.shopify.retry_after', 300);
     }
 }
