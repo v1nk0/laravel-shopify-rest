@@ -2,6 +2,8 @@
 
 namespace V1nk0\LaravelShopifyRest;
 
+use V1nk0\LaravelShopifyRest\Facades\Shopify;
+
 class Response
 {
     /** @var Link[] */
@@ -17,6 +19,11 @@ class Response
     ){
         if($this->statusCode && $this->statusCode >= 200 && $this->statusCode <= 206) {
             $this->success = true;
+        }
+
+        if($this->statusCode === 419) {
+            $retryAfter = $this->getHeader('Retry-After') ?? config('services.shopify.retry_after', 60);
+            Shopify::setRetryAfter((int)$retryAfter);
         }
 
         if(isset($this->headers['Link'][0])) {
@@ -72,21 +79,4 @@ class Response
 
         return null;
     }
-
-    public function rateLimit(): bool
-    {
-        return ($this->statusCode === 419);
-    }
-
-    public function retryAfter(): int
-    {
-        if(!$this->rateLimit()) {
-            return 0;
-        }
-
-        $retryAfter = $this->getHeader('Retry-After') ?? config('services.shopify.retry_after', 300);
-
-        return (int)$retryAfter;
-    }
-
 }
