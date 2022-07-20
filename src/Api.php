@@ -47,11 +47,11 @@ class Api
                 'X-Shopify-Access-Token' => $this->token,
             ]);
 
-            if($payload) {
+            if($payload && $method !== 'GET') {
                 $httpClient->withBody(json_encode($payload), 'application/json');
             }
 
-            $response = $httpClient->send($method, $this->_getPath($path));
+            $response = $httpClient->send($method, $this->_getPath($path, $method, $payload));
 
             if(!$response->ok()) {
                 return new Response($response->status(), $response->headers(), [], $response->json('errors'));
@@ -64,14 +64,20 @@ class Api
         }
     }
 
-    private function _getPath(string $path): string
+    private function _getPath(string $path, string $method, array $payload = []): string
     {
         // If a full rest-api path is provided, we do not need to alter it
         if(str_starts_with($path, '/admin/api/20')) {
             return $path;
         }
 
-        return 'https://'.$this->_getDomain().'/admin/api/'.$this->version.'/'.explode('/admin/', $path)[1];
+        $url = 'https://'.$this->_getDomain().'/admin/api/'.$this->version.'/'.explode('/admin/', $path)[1];
+
+        if($method !== 'GET' || !$payload) {
+            return $url;
+        }
+
+        return $url.'?'.http_build_query($payload);
     }
 
     private function _getDomain(): string
