@@ -7,11 +7,14 @@ use Illuminate\Support\Facades\Http;
 
 class Api
 {
+    private ?string $token = null;
+
     public string $version;
 
     public array $allowedHttpMethods = ['GET', 'POST'];
 
-    public function __construct(private string $token){
+    public function __construct(string $token = null){
+        $this->token = $token;
         $this->version = config('services.shopify.version');
     }
 
@@ -20,6 +23,10 @@ class Api
     {
         if(!in_array($method, $this->allowedHttpMethods)) {
             throw new Exception('HTTP-method ' . $method . ' is not allowed');
+        }
+
+        if(!$this->token) {
+            throw new Exception('No token presented');
         }
 
         if(!str_starts_with($path, '/admin/') || !strstr($path, '.json')) {
@@ -45,6 +52,11 @@ class Api
             // Do something?
             throw new Exception($e->getMessage());
         }
+    }
+
+    public function setToken(string $token)
+    {
+        $this->token = $token;
     }
 
     private function _getPath(string $path): string
