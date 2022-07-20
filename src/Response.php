@@ -15,7 +15,7 @@ class Response
         public array $payload = [],
         public ?string $error = null,
     ){
-        if($this->statusCode === 200) {
+        if($this->statusCode && $this->statusCode >= 200 && $this->statusCode <= 206) {
             $this->success = true;
         }
 
