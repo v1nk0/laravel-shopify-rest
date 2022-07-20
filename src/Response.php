@@ -4,22 +4,37 @@ namespace V1nk0\LaravelShopifyRest;
 
 class Response
 {
-    /**
-     * @param bool $success
-     * @param array $payload
-     * @param string|null $error
-     * @param Link[] $links
-     */
+    /** @var Link[] */
+    public array $links;
+
+    public bool $success = false;
+
     public function __construct(
-        public bool $success = true,
+        public ?int $statusCode = null,
+        public array $headers = [],
         public array $payload = [],
         public ?string $error = null,
-        public array $links = [],
-    ){}
+    ){
+        if($this->statusCode === 200) {
+            $this->success = true;
+        }
 
-    public function setLink(Link $link)
+        if(isset($this->headers['Link'])) {
+            $links = explode(',', $this->headers['Link']);
+            foreach($links as $link) {
+                $link = trim($link);
+                $parts = explode(';', $link);
+                $url = trim(str_replace(['<', '>'], '', $parts[0]));
+                $rel = trim(str_replace(['rel=', '"'], '', $parts[1]));
+
+                $this->links[] = new Link($url, $rel);
+            }
+        }
+    }
+
+    public function setError(?string $error): void
     {
-        $this->links[$link->rel] = $link;
+        $this->error = $error;
     }
 
     public function hasLinkWithRel(string $rel): bool

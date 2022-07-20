@@ -54,27 +54,13 @@ class Api
             $response = $httpClient->send($method, $this->_getPath($path));
 
             if(!$response->ok()) {
-                return new Response(false, [], $response->json('errors'));
+                return new Response($response->status(), $response->headers(), [], $response->json('errors'));
             }
 
-            $links = [];
-
-            if($response->header('Link')) {
-                $headerLinks = explode(',', $response->header('Link'));
-                foreach($headerLinks as $headerLink) {
-                    $headerLink = trim($headerLink);
-                    $headerLinkParts = explode(';', $headerLink);
-                    $url = trim(str_replace(['<', '>'], '', $headerLinkParts[0]));
-                    $rel = trim(str_replace(['rel=', '"'], '', $headerLinkParts[1]));
-
-                    $links[] = new Link($url, $rel);
-                }
-            }
-
-            return new Response(true, $response->json(), null, $links);
+            return new Response($response->status(), $response->headers(), $response->json());
         }
         catch(Exception $e) {
-            return new Response(false, [], $e->getMessage());
+            return new Response(false, [], [], $e->getMessage());
         }
     }
 
