@@ -1,6 +1,7 @@
 {
   "name": "v1nk0/laravel-shopify-rest",
   "description": "",
+  "version": "1.1.0",
   "authors": [
     {
       "name": "Vincent Sebastiaan Kooijman",
