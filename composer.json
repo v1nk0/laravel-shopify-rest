@@ -1,0 +1,31 @@
+{
+  "name": "v1nk0/laravel-shopify-rest",
+  "description": "",
+  "authors": [
+    {
+      "name": "Vincent Sebastiaan Kooijman",
+      "email": "info@vincentkooijman.at",
+      "homepage": "https://www.vincentkooijman.at",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "V1nk0\\LaravelShopifyRest\\": "src/"
+    },
+    "classmap": []
+  },
+  "require": {
+    "php": "^8.1",
+    "laravel/framework": "^9",
+    "nesbot/carbon": "^2",
+    "spatie/laravel-data": "^1.4"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "V1nk0\\LaravelShopifyRest\\Providers\\PackageServiceProvider"
+      ]
+    }
+  }
+}
