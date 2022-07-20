@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 
 class Api
 {
-    private ?string $token = null;
+    private ?string $token;
 
     public string $version;
 
@@ -54,9 +54,10 @@ class Api
         }
     }
 
-    public function setToken(string $token)
+    public function setToken(string $token): Api
     {
         $this->token = $token;
+        return $this;
     }
 
     private function _getPath(string $path): string
