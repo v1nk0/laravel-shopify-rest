@@ -19,7 +19,7 @@ class Api
     }
 
     /** @throws Exception */
-    public function request(string $method, string $path, array $payload = [])
+    public function request(string $method, string $path, array $payload = []): Response
     {
         if(!in_array($method, $this->allowedHttpMethods)) {
             throw new Exception('HTTP-method ' . $method . ' is not allowed');
@@ -47,6 +47,8 @@ class Api
             $response = $httpClient->send($method, $this->_getPath($path));
 
             $response->throw();
+
+            return new Response($response->json());
         }
         catch(Exception $e) {
             // Do something?
