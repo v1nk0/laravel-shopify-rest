@@ -5,7 +5,7 @@ namespace V1nk0\LaravelShopifyRest;
 class Response
 {
     /** @var Link[] */
-    public array $links;
+    public array $links = [];
 
     public bool $success = false;
 
