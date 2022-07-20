@@ -73,19 +73,20 @@ class Response
         return null;
     }
 
-    public function rateLimitReached(): bool
+    public function rateLimit(): bool
     {
         return ($this->statusCode === 419);
     }
 
     public function retryAfter(): int
     {
-        if(!$this->rateLimitReached()) {
+        if(!$this->rateLimit()) {
             return 0;
         }
 
-        $retryAfter = $this->getHeader('Retry-After');
+        $retryAfter = $this->getHeader('Retry-After') ?? config('services.shopify.retry_after', 300);
 
-        return ($retryAfter) ? (int)$retryAfter : (int)config('services.shopify.retry_after', 300);
+        return (int)$retryAfter;
     }
+
 }
