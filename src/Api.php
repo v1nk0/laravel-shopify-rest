@@ -9,12 +9,15 @@ class Api
 {
     private ?string $token;
 
+    public string $domain;
+
     public string $version;
 
     public array $allowedHttpMethods = ['GET', 'POST'];
 
-    public function __construct(string $token = null){
-        $this->token = $token;
+    public function __construct(?string $domain, ?string $token){
+        $this->domain = $domain ?? config('services.shopify.domain');
+        $this->token = $token ?? config('services.shopify.token');
         $this->version = config('services.shopify.version');
     }
 
@@ -25,8 +28,12 @@ class Api
             throw new Exception('HTTP-method ' . $method . ' is not allowed');
         }
 
+        if(!$this->domain) {
+            throw new Exception('Domain missing');
+        }
+
         if(!$this->token) {
-            throw new Exception('No token presented');
+            throw new Exception('Token missing');
         }
 
         if(!str_starts_with($path, '/admin/') || !strstr($path, '.json')) {
@@ -44,7 +51,7 @@ class Api
                 $httpClient->withBody(json_encode($payload), 'application/json');
             }
 
-            $response = $httpClient->send($method, $this->_getPath($path));
+            $response = $httpClient->send($method, 'https://'.$this->_getDomain().$this->_getPath($path));
 
             $response->throw();
 
@@ -69,6 +76,11 @@ class Api
             return $path;
         }
 
-        return '/admin/api/'.$this->version.'/'.explode('/admin/', $path)[1];
+        return $this->baseUrl.'/admin/api/'.$this->version.'/'.explode('/admin/', $path)[1];
+    }
+
+    private function _getDomain(): string
+    {
+        return str_replace(['http://', 'https://'], '', $this->domain);
     }
 }
