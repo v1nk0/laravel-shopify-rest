@@ -19,8 +19,8 @@ class Response
             $this->success = true;
         }
 
-        if(isset($this->headers['Link'])) {
-            $links = explode(',', $this->headers['Link']);
+        if(isset($this->headers['Link'][0])) {
+            $links = explode(',', $this->headers['Link'][0]);
             foreach($links as $link) {
                 $link = trim($link);
                 $parts = explode(';', $link);
