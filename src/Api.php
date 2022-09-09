@@ -54,7 +54,11 @@ class Api
             $response = $httpClient->send($method, $this->_getPath($path, $method, $payload));
 
             if(!$response->ok()) {
-                return new Response($response->status(), $response->headers(), [], $response->json('errors'));
+                $errors = $response->json('errors');
+                if(is_array($errors)) {
+                    $errors = implode(', ', $errors);
+                }
+                return new Response($response->status(), $response->headers(), [], $errors);
             }
 
             return new Response($response->status(), $response->headers(), $response->json());
