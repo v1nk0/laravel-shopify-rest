@@ -53,7 +53,7 @@ class Api
 
             $response = $httpClient->send($method, $this->_getPath($path, $method, $payload));
 
-            if(!$response->ok()) {
+            if(!$response->successful()) {
                 $errors = $response->json('errors');
 
                 if(is_array($errors)) {
