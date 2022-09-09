@@ -55,9 +55,11 @@ class Api
 
             if(!$response->ok()) {
                 $errors = $response->json('errors');
+
                 if(is_array($errors)) {
-                    $errors = implode(', ', $errors);
+                    $errors = (isset($errors['base'])) ? implode(', ', $errors['base']) : implode(', ', $errors);
                 }
+
                 return new Response($response->status(), $response->headers(), [], $errors);
             }
 
