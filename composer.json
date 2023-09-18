@@ -1,7 +1,7 @@
 {
   "name": "v1nk0/laravel-shopify-rest",
   "description": "",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "authors": [
     {
       "name": "Vincent Sebastiaan Kooijman",
@@ -18,9 +18,8 @@
   },
   "require": {
     "php": "^8.1",
-    "laravel/framework": "^9",
-    "nesbot/carbon": "^2",
-    "spatie/laravel-data": "^1.4"
+    "laravel/framework": "^9|^10",
+    "nesbot/carbon": "^2"
   },
   "extra": {
     "laravel": {
